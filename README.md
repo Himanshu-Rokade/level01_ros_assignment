@@ -74,7 +74,7 @@ Now I found another problem that when I launch the testbed_full_bringup file, I 
 ```
 Now I can see the mapping of LaserScan.
 
-Note: Before going towards Navigation i tested the movement of the robot using:
+Note: Before going towards Navigation I tested the movement of the robot using:
 ```
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
@@ -83,13 +83,13 @@ The robot was moving correctly.
 ## Developing ROS2 Navigation
 
 ### Step1
-Create navigation pakage
+Create navigation package
 ```
 ros2 pkg create --build-type ament_cmake testbed_navigation
 ```
 ### Step 2
-As mentioned that not to use nav2brigup directly and individual launch files for each task.
-So firstly i create launch folder in navigation pkg and starts with map_server by creating launch file 
+As mentioned that not to use nav2bringup directly and make individual launch files for each task.
+So firstly I create launch folder in navigation pkg and starts with map_server by creating launch file 
 ```
 map_loader.launch.py
 ```
@@ -103,7 +103,7 @@ It retuns an error as
 ```
 [map_server-1] [ERROR] [1790867784.313877780] [map_io]: Failed processing YAML file /root/assignment_ws/install/testbed_bringup/share/testbed_bringup/maps/testbed_world.yaml at position (-1:-1) for reason: bad file: /root/assignment_ws/install/testbed_bringup/share/testbed_bringup/maps/testbed_world.yaml
 ```
-Then i check the yaml file but not able to find problem then i check CMakeList.txt of bringup pkg and found it that the maps folder is not installed.
+Then I check the yaml file but not able to find problem then I check CMakeList.txt of bringup pkg and found it that the maps folder is not installed.
 ```
 install(
   DIRECTORY
@@ -112,26 +112,26 @@ install(
     share/${PROJECT_NAME}/
 )
 ```
-then i launch it again and found another error as
+then I launch it again and found another error as
 ```
 [map_server-1] [ERROR] [1790868512.847008091] [map_io]: Failed to load image file /root/assignment_ws/install/testbed_bringup/share/testbed_bringup/maps/wrong_path_testbed_world.pgm for reason: Magick: Unable to open file (/root/assignment_ws/install/testbed_bringup/share/testbed_bringup/maps/wrong_path_testbed_world.pgm) reported by magick/blob.c:3089 (OpenBlob)
 ```
-so i check the yaml file and found another problem at image name so i correct it
+so I check the yaml file and found another problem at image name so I correct it
 ```
 image: testbed_world.pgm
 ```
-then it launch without any error and then i check the lifecycle node
+then it launch without any error and then I check the lifecycle node
 ```
 root@ASUS-ROG-Strix:/# ros2 lifecycle nodes 
 /map_server
 root@ASUS-ROG-Strix:/# ros2 lifecycle get /map_server
 active [3]
 ```
-then i launch the robot
+then I launch the robot
 ```
 ros2 launch testbed_bringup testbed_full_bringup.launch.py 
 ```
-Then added map visualization, and the map is not showing then i check the QOS policies of the /map topic and found it
+Then added map visualization, and the map is not showing then I check the QOS policies of the /map topic and found it
 ```
 ros2 topic info -v /map
 Type: nav_msgs/msg/OccupancyGrid
@@ -152,11 +152,11 @@ QoS profile:
   Liveliness: AUTOMATIC
   Liveliness lease duration: Infinite
 ```
-Then i change the Durability policy to TRANSIENT_LOCAL and the map is showing.
+Then I change the Durability policy to TRANSIENT_LOCAL and the fixed frame to map then the map is showing.
 ![alt text](media/map.png)
 
 ### Step 3
-Now creating amcl localization for that i make a config folder for yaml file of amcl and added it in CMakeList.txt and also added dependencies in package.xml
+Now creating amcl localization for that I make a config folder for yaml file of amcl and added it in CMakeList.txt and also added dependencies in package.xml
 ```
 amcl_params.yaml
 ```
@@ -168,7 +168,7 @@ It contains amcl node and lifecycle node for it, and then launch the amcl
 ```
 ros2 launch testbed_navigation localization.launch.py 
 ```
-and then i test the amcl by running telelop.
+and then I test the amcl by running telelop.
 ```
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
@@ -186,12 +186,12 @@ smoother_server - it smoothout the planned path by planner
 bt_navigator - it is for the behaviour tree
 behavior_server - it handles the recovery actions if goal failed.
 ```
-then i launch the navigation launch file and added visulaization of global and local costmap in rviz. 
+then I launch the navigation launch file and added visulaization of global and local costmap in rviz. 
 
 Finally the robot is started to moving autonously as shown below images
 
-![alt text](media/test1.png)(media/test2.png)
-
+![alt text](media/test1.png)
+![alt text](media/test2.png)
 
 ## How to run it
 ```
